@@ -46,13 +46,14 @@ model Cliente {
   notas         String?
 
   fechaCreacion DateTime @default(now())
+  fechaActualizacion DateTime @default(now()) @updatedAt
 
   pedidos Pedido[]
 }
 
 model Venta {
   id            Int      @id @default(autoincrement())
-  precioVenta   Float
+  precioVenta   Decimal
   userId        Int
   pedidoId      Int
   fechaCreacion DateTime @default(now())
@@ -67,7 +68,7 @@ model Pedido {
   id             Int          @id @default(autoincrement())
   estado         EstadoPedido @default(ACUMULANDO)
   clientId       Int
-  precioEnvio    Float?
+  precioEnvio    Decimal?
   claveSeguridad String?
   fechaEnvio     DateTime?
 
@@ -96,7 +97,7 @@ model DetalleCompra {
   compraId      Int
   cantidad      Int
   productoId    Int
-  costoUnitario Float
+  costoUnitario Decimal
 
   producto Producto @relation(fields: [productoId], references: [id])
   compra   Compra   @relation(fields: [compraId], references: [id])
@@ -111,6 +112,7 @@ model Proveedor {
   usuarioTiktok String?
 
   fechaCreacion DateTime @default(now())
+  fechaActualizacion DateTime @default(now()) @updatedAt
 
   compras Compra[]
 }
@@ -121,9 +123,10 @@ model Producto {
   descripcion   String?
   imagen        String?
   stockActual   Int
-  costoUnitario Float
+  costoUnitario Decimal
   categoriaId   Int
   fechaCreacion DateTime @default(now())
+  fechaActualizacion DateTime @default(now()) @updatedAt
 
   detalleCompra DetalleCompra[]
   detalleVenta  DetalleVenta[]
@@ -136,7 +139,7 @@ model DetalleVenta {
   ventaId        Int
   productoId     Int
   cantidad       Int
-  precioUnitario Float
+  costoUnitario Decimal
 
   producto Producto @relation(fields: [productoId], references: [id])
   venta    Venta    @relation(fields: [ventaId], references: [id])
@@ -146,6 +149,7 @@ model Categoria {
   id            Int      @id @default(autoincrement())
   nombre        String
   fechaCreacion DateTime @default(now())
+  fechaActualizacion DateTime @default(now()) @updatedAt
 
   productos Producto[]
 }

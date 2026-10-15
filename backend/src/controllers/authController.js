@@ -2,7 +2,7 @@ import prisma from '../config/db.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 
-async function login(req, res) {
+export async function login(req, res) {
     const {username, password} = req.body
     try {
         const user = await prisma.usuario.findUnique({
@@ -30,7 +30,7 @@ async function login(req, res) {
         )
 
         // guardar las cookis con el jwtsign
-        res.cookie('user', jwtSign, {
+        res.cookie('userToken', jwtSign, {
             maxAge: 1000 * 60 * 60 * 24 * 30,
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production'
@@ -42,4 +42,6 @@ async function login(req, res) {
     }
 }
 
-export default login
+export function logout(req, res) {
+    res.clearCookie('userToken').status(200).json('User logout')
+}

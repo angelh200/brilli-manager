@@ -1,0 +1,23 @@
+# Dependencias de Node (¡Muy pesado, nunca se sube!)
+node_modules/
+
+# Variables de entorno (¡CRÍTICO: Aquí están las contraseñas y el JWT_SECRET!)
+.env
+.env*.local
+
+# Logs de errores de npm/Node
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Archivos generados por Prisma (por si alguna vez vuelves a usar una ruta personalizada)
+generated/
+
+# Bases de datos locales (si en el futuro usas SQLite para pruebas)
+*.db
+*.db-journal
+
+# Archivos basura del sistema operativo
+.DS_Store
+Thumbs.db

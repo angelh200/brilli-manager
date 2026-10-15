@@ -1,0 +1,151 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum RolUsuario {
+  ADMIN
+  EDITOR
+}
+
+enum EstadoPedido {
+  ACUMULANDO
+  ENVIADO
+  RECIBIDO
+}
+
+model Usuario {
+  id           Int        @id @default(autoincrement())
+  username     String @unique
+  passwordHash String
+  rol          RolUsuario @default(EDITOR)
+
+  ventas  Venta[]
+  compras Compra[]
+}
+
+model Cliente {
+  id            Int     @id @default(autoincrement())
+  nombre        String
+  apellido      String?
+  usuarioTiktok String?
+  dni           String?
+  celular       String?
+  departamento  String?
+  ciudad        String?
+  provincia     String?
+  agencia       String?
+  notas         String?
+
+  fechaCreacion DateTime @default(now())
+
+  pedidos Pedido[]
+}
+
+model Venta {
+  id            Int      @id @default(autoincrement())
+  precioVenta   Float
+  userId        Int
+  pedidoId      Int
+  fechaCreacion DateTime @default(now())
+
+  detalleVenta DetalleVenta[]
+
+  pedido Pedido  @relation(fields: [pedidoId], references: [id])
+  user   Usuario @relation(fields: [userId], references: [id])
+}
+
+model Pedido {
+  id             Int          @id @default(autoincrement())
+  estado         EstadoPedido @default(ACUMULANDO)
+  clientId       Int
+  precioEnvio    Float?
+  claveSeguridad String?
+  fechaEnvio     DateTime?
+
+  fechaCreacion DateTime @default(now())
+
+  ventas Venta[]
+
+  cliente Cliente @relation(fields: [clientId], references: [id])
+}
+
+model Compra {
+  id          Int @id @default(autoincrement())
+  userId      Int
+  proveedorId Int
+
+  compras DetalleCompra[]
+
+  fechaCreacion DateTime @default(now())
+
+  proveedor Proveedor @relation(fields: [proveedorId], references: [id])
+  user      Usuario   @relation(fields: [userId], references: [id])
+}
+
+model DetalleCompra {
+  id            Int   @id @default(autoincrement())
+  compraId      Int
+  cantidad      Int
+  productoId    Int
+  costoUnitario Float
+
+  producto Producto @relation(fields: [productoId], references: [id])
+  compra   Compra   @relation(fields: [compraId], references: [id])
+}
+
+model Proveedor {
+  id            Int     @id @default(autoincrement())
+  nombre        String
+  celular       String?
+  direccion     String?
+  horario       String?
+  usuarioTiktok String?
+
+  fechaCreacion DateTime @default(now())
+
+  compras Compra[]
+}
+
+model Producto {
+  id            Int      @id @default(autoincrement())
+  nombre        String
+  descripcion   String?
+  imagen        String?
+  stockActual   Int
+  costoUnitario Float
+  categoriaId   Int
+  fechaCreacion DateTime @default(now())
+
+  detalleCompra DetalleCompra[]
+  detalleVenta  DetalleVenta[]
+
+  categoria Categoria @relation(fields: [categoriaId], references: [id])
+}
+
+model DetalleVenta {
+  id             Int   @id @default(autoincrement())
+  ventaId        Int
+  productoId     Int
+  cantidad       Int
+  precioUnitario Float
+
+  producto Producto @relation(fields: [productoId], references: [id])
+  venta    Venta    @relation(fields: [ventaId], references: [id])
+}
+
+model Categoria {
+  id            Int      @id @default(autoincrement())
+  nombre        String
+  fechaCreacion DateTime @default(now())
+
+  productos Producto[]
+}

@@ -24,7 +24,7 @@ enum EstadoPedido {
 
 model Usuario {
   id           Int        @id @default(autoincrement())
-  username     String @unique
+  username     String     @unique
   passwordHash String
   rol          RolUsuario @default(EDITOR)
 
@@ -36,19 +36,22 @@ model Cliente {
   id            Int     @id @default(autoincrement())
   nombre        String
   apellido      String?
-  usuarioTiktok String?
-  dni           String?
-  celular       String?
+  usuarioTiktok String? @unique
+  dni           String? @unique
+  celular       String? @unique
   departamento  String?
   ciudad        String?
   provincia     String?
   agencia       String?
   notas         String?
 
-  fechaCreacion DateTime @default(now())
+  fechaCreacion      DateTime @default(now())
   fechaActualizacion DateTime @default(now()) @updatedAt
 
   pedidos Pedido[]
+
+  @@index([nombre])
+  @@index([dni])
 }
 
 model Venta {
@@ -62,6 +65,9 @@ model Venta {
 
   pedido Pedido  @relation(fields: [pedidoId], references: [id])
   user   Usuario @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([pedidoId])
 }
 
 model Pedido {
@@ -77,6 +83,8 @@ model Pedido {
   ventas Venta[]
 
   cliente Cliente @relation(fields: [clientId], references: [id])
+
+  @@index([clientId])
 }
 
 model Compra {
@@ -90,10 +98,13 @@ model Compra {
 
   proveedor Proveedor @relation(fields: [proveedorId], references: [id])
   user      Usuario   @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([proveedorId])
 }
 
 model DetalleCompra {
-  id            Int   @id @default(autoincrement())
+  id            Int     @id @default(autoincrement())
   compraId      Int
   cantidad      Int
   productoId    Int
@@ -101,55 +112,68 @@ model DetalleCompra {
 
   producto Producto @relation(fields: [productoId], references: [id])
   compra   Compra   @relation(fields: [compraId], references: [id])
+
+  @@index([compraId])
+  @@index([productoId])
 }
 
 model Proveedor {
   id            Int     @id @default(autoincrement())
-  nombre        String
+  nombre        String  @unique
   celular       String?
   direccion     String?
   horario       String?
-  usuarioTiktok String?
+  usuarioTiktok String? @unique
 
-  fechaCreacion DateTime @default(now())
+  fechaCreacion      DateTime @default(now())
   fechaActualizacion DateTime @default(now()) @updatedAt
 
   compras Compra[]
+
+  @@index([nombre])
 }
 
 model Producto {
-  id            Int      @id @default(autoincrement())
-  nombre        String
-  descripcion   String?
-  imagen        String?
-  stockActual   Int
-  costoUnitario Decimal
-  categoriaId   Int
-  fechaCreacion DateTime @default(now())
+  id                 Int      @id @default(autoincrement())
+  nombre             String   @unique
+  descripcion        String?
+  imagen             String?
+  stockActual        Int
+  costoUnitario      Decimal
+  categoriaId        Int
+  fechaCreacion      DateTime @default(now())
   fechaActualizacion DateTime @default(now()) @updatedAt
 
   detalleCompra DetalleCompra[]
   detalleVenta  DetalleVenta[]
 
   categoria Categoria @relation(fields: [categoriaId], references: [id])
+
+  @@index([nombre])
+  @@index([categoriaId])
 }
 
 model DetalleVenta {
-  id             Int   @id @default(autoincrement())
-  ventaId        Int
-  productoId     Int
-  cantidad       Int
+  id            Int     @id @default(autoincrement())
+  ventaId       Int
+  productoId    Int
+  cantidad      Int
   costoUnitario Decimal
 
   producto Producto @relation(fields: [productoId], references: [id])
   venta    Venta    @relation(fields: [ventaId], references: [id])
+
+  @@index([ventaId])
+  @@index([productoId])
 }
 
 model Categoria {
-  id            Int      @id @default(autoincrement())
-  nombre        String
-  fechaCreacion DateTime @default(now())
+  id                 Int      @id @default(autoincrement())
+  nombre             String   @unique
+  fechaCreacion      DateTime @default(now())
   fechaActualizacion DateTime @default(now()) @updatedAt
 
   productos Producto[]
+
+  @@index([nombre])
 }
